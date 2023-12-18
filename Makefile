@@ -38,7 +38,8 @@ windows: format
 	CGO_ENABLED=0 GOOS=windows GOARCH=${TARGETARCH} go build -v -o bin/kbot.exe -ldflags "-X="github.com/ucraalex/kbot/cmd.appVersion=${VERSION}
 
 image:
-	docker build --target=${OS} --build-arg OS=${OS} --build-arg ARCH=${ARCH} --build-arg EXT=${EXT} --build-arg VERSION=${VERSION} -t ${REGISTRY}/${APP}:${VERSION}-${ARCH} .
+	docker build . -t ${REGISTRY}/${APP}:${VERSION}-${ARCH}
+	#docker build --target=${OS} --build-arg OS=${OS} --build-arg ARCH=${ARCH} --build-arg EXT=${EXT} --build-arg VERSION=${VERSION} -t ${REGISTRY}/${APP}:${VERSION}-${ARCH} .
 
 push:
 	docker push ${REGISTRY}/${APP}:${VERSION}-${ARCH}
