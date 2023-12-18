@@ -18,35 +18,32 @@ VERSION=$(shell git describe --tags --abbrev=0)-$(shell git rev-parse --short HE
 get:
 	go get
 
-format: 
-	gofmt -s -w ./
-
 lint:
 	golint
 
 test:
 	go test -v
 
-build: get
+build: 
 	@printf "Detected OS/ARCH: $(detected_OS)/$(detected_arch)\n"
 	CGO_ENABLED=0 GOOS=$(detected_OS) GOARCH=$(detected_arch) go build -v -o kbot -ldflags "-X="github.com/ucra7588/kbot/cmd.appVersion=${VERSION}
 
-linux: format get
+linux: get
 	@printf "Target OS/ARCH: linux/$(detected_arch)\n"
 	CGO_ENABLED=0 GOOS=linux GOARCH=$(detected_arch) go build -v -o kbot -ldflags "-X="github.com/ucra7588/kbot/cmd.appVersion=${VERSION}
 	docker build --build-arg name=linux -t ${REGISTRY}/${APP}:${VERSION}-linux-$(detected_arch) .
 
-windows: format get
+windows: get
 	@printf "Target OS/ARCH: windows/$(detected_arch)\n"
 	CGO_ENABLED=0 GOOS=windows GOARCH=$(detected_arch) go build -v -o kbot -ldflags "-X="github.com/ucra7588/kbot/cmd.appVersion=${VERSION}
 	docker build --build-arg name=windows -t ${REGISTRY}/${APP}:${VERSION}-windows-$(detected_arch) .
 
-darwin: format get
+darwin: get
 	@printf "Target OS/ARCH: darwin/$(detected_arch)\n"
 	CGO_ENABLED=0 GOOS=darwin GOARCH=$(detected_arch) go build -v -o kbot -ldflags "-X="github.com/ucra7588/kbot/cmd.appVersion=${VERSION}
 	docker build --build-arg name=darwin -t ${REGISTRY}/${APP}:${VERSION}-darwin-$(detected_arch) .
 
-arm: format get
+arm: get
 	@printf "Target OS/ARCH: $(detected_OS)/arm\n"
 	CGO_ENABLED=0 GOOS=$(detected_OS) GOARCH=arm go build -v -o kbot -ldflags "-X="github.com/ucra7588/kbot/cmd.appVersion=${VERSION}
 	docker build --build-arg name=arm -t ${REGISTRY}/${APP}:${VERSION}-$(detected_OS)-arm .
