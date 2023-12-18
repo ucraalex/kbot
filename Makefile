@@ -25,7 +25,7 @@ lint:
 test:
 	go test -v
 
-build: get
+build: 
 	@printf "Detected OS/ARCH: $(detected_OS)/$(detected_arch)\n"
 	CGO_ENABLED=0 GOOS=$(detected_OS) GOARCH=$(detected_arch) go build -v -o kbot -ldflags "-X="github.com/Ucra7588/kbot/cmd.appVersion=${VERSION}
 
