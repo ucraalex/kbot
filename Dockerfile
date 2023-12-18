@@ -13,3 +13,25 @@ WORKDIR /
 COPY --from=builder /go/src/app/bin/* .
 COPY --from=alpine:latest /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 ENTRYPOINT [ "./kbot" ]
+CMD [ "start" ]
+
+FROM scratch as darwin
+WORKDIR /
+COPY --from=builder /go/src/app/bin/* .
+COPY --from=alpine:latest /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+ENTRYPOINT [ "./kbot" ]
+CMD [ "start" ]
+
+FROM scratch as arm
+WORKDIR /
+COPY --from=builder /go/src/app/bin/* .
+COPY --from=alpine:latest /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+ENTRYPOINT [ "./kbot" ]
+CMD [ "start" ]
+
+FROM scratch as windows
+WORKDIR /
+COPY --from=builder /go/src/app/bin/* .
+COPY --from=alpine:latest /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+ENTRYPOINT [ "./kbot" ]
+CMD [ "start" ]
