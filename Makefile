@@ -1,17 +1,16 @@
-APP=$(shell basename $(shell git remote get-url origin))
-REGISTRY_DOCKER=silhouetteua/$(APP)
-REGISTRY_GH=silhouetteua/$(APP)
+APP:=$(shell basename -s .git $(shell git remote get-url origin))
 VERSION=$(shell git describe --tags --abbrev=0)-$(shell git rev-parse --short HEAD)
-TARGETOS=linux#Linux darwin windows
-TARGETARCH=amd64#arm64 amd64
-PATHNAME_DOCKER=$(REGISTRY_DOCKER):$(VERSION)-$(TARGETOS)-$(TARGETARCH)
-PATHNAME_GH=$(REGISTRY_GH):$(VERSION)-$(TARGETOS)-$(TARGETARCH)
+OS:=linux
+ARCH:=amd64
+#NAME:=kbot
+EXT:=""
+REGISTRY:=Ucra7588
 
 format:
 	gofmt -s -w ./
 
 lint:
-	golint
+	golangci-lint
 
 test:
 	go test -v
@@ -20,17 +19,30 @@ get:
 	go get
 
 build: format get
-	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -v -o kbot -ldflags "-X="github.com/silhouetteua/kbot/cmd.appVersion=${VERSION}
+	CGO_ENABLED=0 GOOS=${OS} GOARCH=${ARCH} go build -v -o bin/${APP}${EXT} -ldflags "-X="github.com/Ucra7588/kbot/cmd.appVersion=${VERSION}
+
+#linux: format
+#	TARGETARCH="amd64"
+#	CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH} go build -v -o bin/kbot -ldflags "-X="github.com/Ucra7588/kbot/cmd.appVersion=${VERSION}
+
+#macos: format
+#	TARGETARCH="amd64"
+#	CGO_ENABLED=0 GOOS=darwin GOARCH=${TARGETARCH} go build -v -o bin/kbot -ldflags "-X="github.com/Ucra7588/kbot/cmd.appVersion=${VERSION}
+
+#arm: format
+#	TARGETARCH="arm64"
+#	CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH} go build -v -o bin/kbot -ldflags "-X="github.com/Ucra7588/kbot/cmd.appVersion=${VERSION}
+
+#windows: format
+#	TARGETARCH="amd64"
+#	CGO_ENABLED=0 GOOS=windows GOARCH=${TARGETARCH} go build -v -o bin/kbot.exe -ldflags "-X="github.com/Ucra7588/kbot/cmd.appVersion=${VERSION}
 
 image:
-	docker build . -t $(PATHNAME_DOCKER)
-	#docker build . -t ghcr.io/$(PATHNAME_GH)
+	docker build --target=${OS} --build-arg OS=${OS} --build-arg ARCH=${ARCH} --build-arg EXT=${EXT} --build-arg VERSION=${VERSION} -t ${REGISTRY}/${APP}:${VERSION}-${ARCH} .
 
 push:
-	docker push $(PATHNAME_DOCKER)
-	#docker push ghcr.io/$(PATHNAME_GH)
+	docker push ${REGISTRY}/${APP}:${VERSION}-${ARCH}
 
 clean:
-	rm -rf kbot
-	docker rmi $(PATHNAME_DOCKER)
-	#docker rmi ghcr.io/$(PATHNAME_GH)
+	rm -rf bin/
+	docker rmi ${REGISTRY}/${APP}:${VERSION}-${ARCH}
