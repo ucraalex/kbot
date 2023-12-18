@@ -1,5 +1,5 @@
 APP=$(shell basename $(shell git remote get-url origin))
-REGISTRY_DOCKER=ucra7588/$(APP)
+REGISTRY_DOCKER=Ucra7588/$(APP)
 REGISTRY_GH=Ucra7588/$(APP)
 VERSION=$(shell git describe --tags --abbrev=0)-$(shell git rev-parse --short HEAD)
 TARGETOS=linux#Linux darwin windows
