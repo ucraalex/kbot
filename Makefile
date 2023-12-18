@@ -9,21 +9,11 @@ else
 	detected_arch := $(shell dpkg --print-architecture 2>/dev/null || amd64)
 endif
 
-#colors:
-B = \033[1;94m#   BLUE
-G = \033[1;92m#   GREEN
-Y = \033[1;93m#   YELLOW
-R = \033[1;31m#   RED
-M = \033[1;95m#   MAGENTA
-K = \033[K#       ERASE END OF LINE
-D = \033[0m#      DEFAULT
-A = \007#         BEEP
-
 APP=$(shell basename $(shell git remote get-url origin))
 REGISTRY=Ucra7588
 VERSION=$(shell git describe --tags --abbrev=0)-$(shell git rev-parse --short HEAD)
 	
-format:
+format: 
 	gofmt -s -w ./
 
 get:
@@ -36,26 +26,26 @@ test:
 	go test -v
 
 build: format get
-	@printf "$GDetected OS/ARCH: $R$(detected_OS)/$(detected_arch)$D\n"
+	@printf "Detected OS/ARCH: $(detected_OS)/$(detected_arch)\n"
 	CGO_ENABLED=0 GOOS=$(detected_OS) GOARCH=$(detected_arch) go build -v -o kbot -ldflags "-X="github.com/Ucra7588/kbot/cmd.appVersion=${VERSION}
 
 linux: format get
-	@printf "$GTarget OS/ARCH: $Rlinux/$(detected_arch)$D\n"
+	@printf "Target OS/ARCH: linux/$(detected_arch)\n"
 	CGO_ENABLED=0 GOOS=linux GOARCH=$(detected_arch) go build -v -o kbot -ldflags "-X="github.com/Ucra7588/kbot/cmd.appVersion=${VERSION}
 	docker build --build-arg name=linux -t ${REGISTRY}/${APP}:${VERSION}-linux-$(detected_arch) .
 
 windows: format get
-	@printf "$GTarget OS/ARCH: $Rwindows/$(detected_arch)$D\n"
+	@printf "Target OS/ARCH: windows/$(detected_arch)\n"
 	CGO_ENABLED=0 GOOS=windows GOARCH=$(detected_arch) go build -v -o kbot -ldflags "-X="github.com/Ucra7588/kbot/cmd.appVersion=${VERSION}
 	docker build --build-arg name=windows -t ${REGISTRY}/${APP}:${VERSION}-windows-$(detected_arch) .
 
 darwin:format get
-	@printf "$GTarget OS/ARCH: $Rdarwin/$(detected_arch)$D\n"
+	@printf "Target OS/ARCH: darwin/$(detected_arch)\n"
 	CGO_ENABLED=0 GOOS=darwin GOARCH=$(detected_arch) go build -v -o kbot -ldflags "-X="github.com/Ucra7588/kbot/cmd.appVersion=${VERSION}
 	docker build --build-arg name=darwin -t ${REGISTRY}/${APP}:${VERSION}-darwin-$(detected_arch) .
 
 arm: format get
-	@printf "$GTarget OS/ARCH: $R$(detected_OS)/arm$D\n"
+	@printf "Target OS/ARCH: $(detected_OS)/arm\n"
 	CGO_ENABLED=0 GOOS=$(detected_OS) GOARCH=arm go build -v -o kbot -ldflags "-X="github.com/Ucra7588/kbot/cmd.appVersion=${VERSION}
 	docker build --build-arg name=arm -t ${REGISTRY}/${APP}:${VERSION}-$(detected_OS)-arm .
 
