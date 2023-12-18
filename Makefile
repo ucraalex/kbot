@@ -16,8 +16,6 @@ VERSION=$(shell git describe --tags --abbrev=0)-$(shell git rev-parse --short HE
 format: 
 	gofmt -s -w ./
 
-make: format
-
 get:
 	go get
 
