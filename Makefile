@@ -1,5 +1,3 @@
-6770403985:AAFIQhcnMVl9iWO6DVKDWx7yQLAH5JntOd4
-
 ifeq '$(findstring ;,$(PATH))' ';'
     detected_OS := windows
 	detected_arch := amd64
