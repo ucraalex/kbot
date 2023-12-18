@@ -4,7 +4,7 @@ OS:=linux
 ARCH:=amd64
 #NAME:=kbot
 EXT:=""
-REGISTRY:=ucra7588
+REGISTRY:=ucraalex
 
 format:
 	gofmt -s -w ./
@@ -19,23 +19,23 @@ get:
 	go get
 
 build: format get
-	CGO_ENABLED=0 GOOS=${OS} GOARCH=${ARCH} go build -v -o bin/${APP}${EXT} -ldflags "-X="github.com/ucra7588/kbot/cmd.appVersion=${VERSION}
+	CGO_ENABLED=0 GOOS=${OS} GOARCH=${ARCH} go build -v -o bin/${APP}${EXT} -ldflags "-X="github.com/ucraalex/kbot/cmd.appVersion=${VERSION}
 
 linux: format
 	TARGETARCH="amd64"
-	CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH} go build -v -o bin/kbot -ldflags "-X="github.com/ucra7588/kbot/cmd.appVersion=${VERSION}
+	CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH} go build -v -o bin/kbot -ldflags "-X="github.com/ucraalex/kbot/cmd.appVersion=${VERSION}
 
 macos: format
 	TARGETARCH="amd64"
-	CGO_ENABLED=0 GOOS=darwin GOARCH=${TARGETARCH} go build -v -o bin/kbot -ldflags "-X="github.com/ucra7588/kbot/cmd.appVersion=${VERSION}
+	CGO_ENABLED=0 GOOS=darwin GOARCH=${TARGETARCH} go build -v -o bin/kbot -ldflags "-X="github.com/ucraalex/kbot/cmd.appVersion=${VERSION}
 
 arm: format
 	TARGETARCH="arm64"
-	CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH} go build -v -o bin/kbot -ldflags "-X="github.com/ucra7588/kbot/cmd.appVersion=${VERSION}
+	CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH} go build -v -o bin/kbot -ldflags "-X="github.com/ucraalex/kbot/cmd.appVersion=${VERSION}
 
 windows: format
 	TARGETARCH="amd64"
-	CGO_ENABLED=0 GOOS=windows GOARCH=${TARGETARCH} go build -v -o bin/kbot.exe -ldflags "-X="github.com/ucra7588/kbot/cmd.appVersion=${VERSION}
+	CGO_ENABLED=0 GOOS=windows GOARCH=${TARGETARCH} go build -v -o bin/kbot.exe -ldflags "-X="github.com/ucraalex/kbot/cmd.appVersion=${VERSION}
 
 image:
 	docker build --target=${OS} --build-arg OS=${OS} --build-arg ARCH=${ARCH} --build-arg EXT=${EXT} --build-arg VERSION=${VERSION} -t ${REGISTRY}/${APP}:${VERSION}-${ARCH} .
