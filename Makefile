@@ -13,7 +13,7 @@ APP=$(shell basename $(shell git remote get-url origin))
 REGISTRY=Ucra7588
 VERSION=$(shell git describe --tags --abbrev=0)-$(shell git rev-parse --short HEAD)
 	
-format: 
+make: 
 	gofmt -s -w ./
 
 get:
