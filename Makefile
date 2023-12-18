@@ -13,8 +13,10 @@ APP=$(shell basename $(shell git remote get-url origin))
 REGISTRY=Ucra7588
 VERSION=$(shell git describe --tags --abbrev=0)-$(shell git rev-parse --short HEAD)
 	
-make format: 
+format: 
 	gofmt -s -w ./
+
+make: format
 
 get:
 	go get
@@ -39,7 +41,7 @@ windows: format get
 	CGO_ENABLED=0 GOOS=windows GOARCH=$(detected_arch) go build -v -o kbot -ldflags "-X="github.com/Ucra7588/kbot/cmd.appVersion=${VERSION}
 	docker build --build-arg name=windows -t ${REGISTRY}/${APP}:${VERSION}-windows-$(detected_arch) .
 
-darwin:format get
+darwin: format get
 	@printf "Target OS/ARCH: darwin/$(detected_arch)\n"
 	CGO_ENABLED=0 GOOS=darwin GOARCH=$(detected_arch) go build -v -o kbot -ldflags "-X="github.com/Ucra7588/kbot/cmd.appVersion=${VERSION}
 	docker build --build-arg name=darwin -t ${REGISTRY}/${APP}:${VERSION}-darwin-$(detected_arch) .
