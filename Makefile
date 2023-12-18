@@ -1,6 +1,6 @@
 APP=$(shell basename $(shell git remote get-url origin))
-REGISTRY_DOCKER=Ucra7588/$(APP)
-REGISTRY_GH=Ucra7588/$(APP)
+REGISTRY_DOCKER=silhouetteua/$(APP)
+REGISTRY_GH=silhouetteua/$(APP)
 VERSION=$(shell git describe --tags --abbrev=0)-$(shell git rev-parse --short HEAD)
 TARGETOS=linux#Linux darwin windows
 TARGETARCH=amd64#arm64 amd64
@@ -20,7 +20,7 @@ get:
 	go get
 
 build: format get
-	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -v -o kbot -ldflags "-X="github.com/Ucra7588/kbot/cmd.appVersion=${VERSION}
+	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -v -o kbot -ldflags "-X="github.com/silhouetteua/kbot/cmd.appVersion=${VERSION}
 
 image:
 	docker build . -t $(PATHNAME_DOCKER)
