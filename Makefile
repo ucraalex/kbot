@@ -1,49 +1,33 @@
-APP:=$(shell basename -s .git $(shell git remote get-url origin))
+APP=$(shell basename $(shell git remote get-url origin))
+REGISTRY=ucraalex
 VERSION=$(shell git describe --tags --abbrev=0)-$(shell git rev-parse --short HEAD)
-OS:=linux
-ARCH:=amd64
-#NAME:=kbot
-EXT:=""
-REGISTRY:=ucraalex
+TARGETOS=$(word 2,$(MAKECMDGOALS)) # 1st argument from command line 
+TARGETARCH=$(word 3,$(MAKECMDGOALS)) # 2nd argument from command line
 
 format:
 	gofmt -s -w ./
 
 lint:
-	golangci-lint
+	golint
 
 test:
 	go test -v
 
 get:
-	go get
+	go get	
 
-build: format get
-	CGO_ENABLED=0 GOOS=${OS} GOARCH=${ARCH} go build -v -o bin/${APP}${EXT} -ldflags "-X="github.com/ucraalex/kbot/cmd.appVersion=${VERSION}
+# for building kbot use make build <arg1> <arg2>, where arg1 - OS type (linux, windows, darwin )
+# and arg2 - type of architecture (amd64, arm64)
 
-linux: format
-	TARGETARCH="amd64"
-	CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH} go build -v -o bin/kbot -ldflags "-X="github.com/ucraalex/kbot/cmd.appVersion=${VERSION}
-
-macos: format
-	TARGETARCH="amd64"
-	CGO_ENABLED=0 GOOS=darwin GOARCH=${TARGETARCH} go build -v -o bin/kbot -ldflags "-X="github.com/ucraalex/kbot/cmd.appVersion=${VERSION}
-
-arm: format
-	TARGETARCH="arm64"
-	CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH} go build -v -o bin/kbot -ldflags "-X="github.com/ucraalex/kbot/cmd.appVersion=${VERSION}
-
-windows: format
-	TARGETARCH="amd64"
-	CGO_ENABLED=0 GOOS=windows GOARCH=${TARGETARCH} go build -v -o bin/kbot.exe -ldflags "-X="github.com/ucraalex/kbot/cmd.appVersion=${VERSION}
+build: format get 
+	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -v -o kbot -ldflags "-X="github.com/ucraalex/kbot/cmd.appVersion=${VERSION}
 
 image:
-	docker build . -t ${REGISTRY}/${APP}:${VERSION}-${ARCH}
-	#docker build --target=${OS} --build-arg OS=${OS} --build-arg ARCH=${ARCH} --build-arg EXT=${EXT} --build-arg VERSION=${VERSION} -t ${REGISTRY}/${APP}:${VERSION}-${ARCH} .
+	docker build . -t ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
 
 push:
-	docker push ${REGISTRY}/${APP}:${VERSION}-${ARCH}
+	docker push ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
 
 clean:
-	rm -rf bin/
-	docker rmi ${REGISTRY}/${APP}:${VERSION}-${ARCH}
+	rm -rf kbot
+        docker rmi ${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
