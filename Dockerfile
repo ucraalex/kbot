@@ -1,37 +1,12 @@
-FROM quay.io/projectquay/golang:1.21 as builder
-ARG OS=linux
-ARG ARCH=amd64
-ARG NAME=kbot
-ARG EXT=""
-ARG VERSION=$VERSION
+FROM quay.io/projectquay/golang:1.20 as builder
+
 WORKDIR /go/src/app
 COPY . .
-RUN make build OS=${OS} ARCH=${ARCH} NAME=${NAME} EXT=${EXT} VERSION=${VERSION}
+ARG TARGETARCH
+RUN make build TARGETARCH=$TARGETARCH
 
-FROM scratch as linux
+FROM scratch
 WORKDIR /
-COPY --from=builder /go/src/app/bin/* .
+COPY --from=builder /go/src/app/kbot .
 COPY --from=alpine:latest /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-ENTRYPOINT [ "./kbot" ]
-CMD [ "start" ]
-
-FROM scratch as darwin
-WORKDIR /
-COPY --from=builder /go/src/app/bin/* .
-COPY --from=alpine:latest /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-ENTRYPOINT [ "./kbot" ]
-CMD [ "start" ]
-
-FROM scratch as arm
-WORKDIR /
-COPY --from=builder /go/src/app/bin/* .
-COPY --from=alpine:latest /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-ENTRYPOINT [ "./kbot" ]
-CMD [ "start" ]
-
-FROM scratch as windows
-WORKDIR /
-COPY --from=builder /go/src/app/bin/* .
-COPY --from=alpine:latest /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-ENTRYPOINT [ "./kbot" ]
-CMD [ "start" ]
+ENTRYPOINT ["./kbot", "start"]
